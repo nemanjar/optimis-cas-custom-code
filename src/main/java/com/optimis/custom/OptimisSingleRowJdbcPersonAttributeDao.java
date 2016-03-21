@@ -37,7 +37,11 @@ public class OptimisSingleRowJdbcPersonAttributeDao extends SingleRowJdbcPersonA
             UUIDUtil.fixUuidAttributes(queryResult, uuidAttributes);
             final Map<String, List<Object>> multivaluedQueryResult = MultivaluedPersonAttributeUtils.toMultivaluedMap(queryResult);
             List memberships = resolveExtraAttributes(queryUserName);
-            multivaluedQueryResult.put("memberships",memberships );
+            // Wrap resulting attributes in a list in case there is only one element inside.
+            // PrincipalResolver will change resulting type in that case
+            List membershipsWrapper = new ArrayList();
+            membershipsWrapper.add(memberships);
+            multivaluedQueryResult.put("memberships",membershipsWrapper );
             final IPersonAttributes person;
             final String userNameAttribute = this.getConfiguredUserNameAttribute();
             if (this.isUserNameAttributeConfigured() && queryResult.containsKey(userNameAttribute)) {
