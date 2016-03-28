@@ -23,6 +23,7 @@ public class OptimisSingleRowJdbcPersonAttributeDao extends SingleRowJdbcPersonA
     private String extraAttributesSql;
     private Set<String> uuidAttributes;
     private JdbcTemplate jdbcTemplate;
+    private String abilitiesSql;
 
     public OptimisSingleRowJdbcPersonAttributeDao(final DataSource ds, final String sql) {
         super(ds, sql);
@@ -70,15 +71,22 @@ public class OptimisSingleRowJdbcPersonAttributeDao extends SingleRowJdbcPersonA
     private List<Map<String, Object>> resolveExtraAttributes(String queryUserName){
         List<Map<String, Object>> result = null;
         try {
-            result = jdbcTemplate.query(extraAttributesSql, getExtendedAttaributesRowMapper(), queryUserName);
+            result = jdbcTemplate.query(extraAttributesSql, createRowMapper(), queryUserName);
             UUIDUtil.fixUuidAttributes(result, uuidAttributes);
+            for (Map<String, Object> membershipValuesMap : result) {
+                Integer membershipId = (Integer) membershipValuesMap.get("id");
+                List<Map<String, Object>> abilities = jdbcTemplate.query(abilitiesSql, createRowMapper(), membershipId);
+                membershipValuesMap.put("abilities", abilities);
+                membershipValuesMap.remove("id");
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return result;
     }
 
-    private RowMapper<Map<String,Object>> getExtendedAttaributesRowMapper() throws SQLException{
+    private RowMapper<Map<String,Object>> createRowMapper() throws SQLException{
         RowMapper<Map<String,Object>> result = new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -113,5 +121,13 @@ public class OptimisSingleRowJdbcPersonAttributeDao extends SingleRowJdbcPersonA
 
     public void setUuidAttributes(Set<String> uuidAttributes) {
         this.uuidAttributes = uuidAttributes;
+    }
+
+    public String getAbilitiesSql() {
+        return abilitiesSql;
+    }
+
+    public void setAbilitiesSql(String abilitiesSql) {
+        this.abilitiesSql = abilitiesSql;
     }
 }
