@@ -8,9 +8,19 @@ import org.springframework.webflow.execution.RequestContext;
 public class LoadUrl {
 
     private String url;
+    private String passwordChangeUrl;
 
     public void loadUrlsFromWebflow(RequestContext context) {
         context.getFlowScope().put("defaultUrl", this.url);
+        context.getFlowScope().put("passwordChangeUrl", this.passwordChangeUrl);
+    }
+
+    public String getPasswordChangeUrl() {
+        return passwordChangeUrl;
+    }
+
+    public void setPasswordChangeUrl(String passwordChangeUrl) {
+        this.passwordChangeUrl = passwordChangeUrl;
     }
 
     public String getUrl() {
