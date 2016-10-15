@@ -20,12 +20,14 @@ public class UUIDUtil {
     public static void fixUuidAttributes(Map<String, Object> resultMap, Set<String> uuidAttributes) {
         for (String key : resultMap.keySet()) {
             if(uuidAttributes.contains(key)){
-                String withoutDashes = (String) resultMap.get(key);
-                BigInteger bi1 = new BigInteger(withoutDashes.substring(0, 16), 16);
-                BigInteger bi2 = new BigInteger(withoutDashes.substring(16, 32), 16);
-                UUID uuid = new UUID(bi1.longValue(), bi2.longValue());
-                String withDashes = uuid.toString();
-                resultMap.put(key, withDashes);
+                if(resultMap.get(key) != null) {
+                    String withoutDashes = (String) resultMap.get(key);
+                    BigInteger bi1 = new BigInteger(withoutDashes.substring(0, 16), 16);
+                    BigInteger bi2 = new BigInteger(withoutDashes.substring(16, 32), 16);
+                    UUID uuid = new UUID(bi1.longValue(), bi2.longValue());
+                    String withDashes = uuid.toString();
+                    resultMap.put(key, withDashes);
+                }
             }
         }
     }
