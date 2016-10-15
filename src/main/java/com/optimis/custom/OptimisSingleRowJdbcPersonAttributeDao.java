@@ -82,6 +82,8 @@ public class OptimisSingleRowJdbcPersonAttributeDao extends SingleRowJdbcPersonA
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
